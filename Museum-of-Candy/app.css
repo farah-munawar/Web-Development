@@ -6,7 +6,6 @@ body {
 
 #mainNavbar .nav-link {
     color: #f3dbce;
-
 }
 
 #mainNavbar .nav-link:hover {
@@ -23,4 +22,19 @@ body {
 #mainNavbar {
     font-size: 1.5rem;
     font-weight: 100;
+}
+
+h1 {
+    color: #E5989B;
+    font-weight: 500;
+    background-color: #343a40;
+    padding: 10px;
+    margin: 10%;
+}
+
+@media (max-width:1200px) {
+    #headingGroup h1 {
+        font-weight: 500;
+        font-size: 3rem;
+    }
 }
