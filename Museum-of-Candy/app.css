@@ -3,7 +3,6 @@ body {
     font-family: "Nunito", sans-serif;
 }
 
-
 #mainNavbar .nav-link {
     color: #f3dbce;
 }
@@ -28,13 +27,46 @@ h1 {
     color: #E5989B;
     font-weight: 500;
     background-color: #343a40;
+    background-color: none;
     padding: 10px;
     margin: 10%;
 }
+
+
 
 @media (max-width:1200px) {
     #headingGroup h1 {
         font-weight: 500;
         font-size: 3rem;
     }
+}
+
+.full-cover-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.col-lg-6 {
+    position: relative;
+    overflow: hidden;
+}
+
+h2 {
+    color: #E5989B;
+    font-weight: 500;
+
+}
+
+p {
+    color: #E5989B;
+    font-size: 1.125rem;
+    font-weight: 100;
+    line-height: 1.5;
+}
+
+
+.content {
+    margin: 50px;
+
 }
