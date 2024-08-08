@@ -1,0 +1,135 @@
+body,
+html {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    height: 100%;
+    background: im;
+    font-family: "Nunito", sans-serif;
+}
+
+
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(to bottom right, rgb(1, 10, 68), rgb(80, 113, 125));
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+}
+
+h1 {
+    border-radius: 50px;
+    /* background: linear-gradient(to bottom right, rgb(27, 27, 69), white); */
+    background-color: white;
+    padding: 10px;
+    text-align: center;
+    color: #6F78BB;
+}
+
+h2 {
+    /* border-radius: 50px; */
+    /* background: linear-gradient(to bottom right, rgb(27, 27, 69), white); */
+    color: #FF683D;
+    text-align: center;
+    font-size: xxx-large;
+}
+
+#playto {
+    border-radius: 50px;
+    background-color: white;
+    padding: 10px;
+    color: #6F78BB;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+}
+
+.container {
+    background-color: rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: auto;
+    width: 70%;
+    margin: 0 auto;
+    padding: 20px;
+    border-radius: 50px;
+
+}
+
+img {
+    width: 100%;
+    height: auto;
+    border-radius: 50px;
+}
+
+.b {
+    margin: 10px 0;
+    padding: 10px;
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+button {
+    margin: 5px 20px;
+    padding: 10px 20px;
+    border: 3px solid white;
+    border-radius: 20px;
+    font-size: larger;
+    background-color: white;
+    cursor: pointer;
+    font-family: "Nunito", sans-serif;
+    color: hsl(233, 36%, 58%);
+    font-weight: bold;
+
+}
+
+button .c2 {
+    display: none;
+    margin: 10px;
+    padding: 10px 20px;
+    border: 3px solid white;
+    border-radius: 20px;
+    background-color: white;
+    cursor: pointer;
+    font-family: "Nunito", sans-serif;
+    font-size: large;
+    font-weight: bold;
+
+
+}
+
+button:hover .c1 {
+    display: none;
+}
+
+button:hover .c2 {
+    display: inline;
+}
+
+button.active .c1 {
+    display: none;
+}
+
+
+button.active .c2 {
+    display: inline;
+    color: #FF683D;
+    font-weight: bold;
+    font-size: large;
+}
+
+button:hover.reset {
+    color: #FF683D;
+    font-weight: bold;
+    font-size: large;
+}
+
+/* rgb(2, 14, 56) */
