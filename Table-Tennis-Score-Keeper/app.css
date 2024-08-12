@@ -32,11 +32,13 @@ h1 {
 }
 
 h2 {
-    /* border-radius: 50px; */
+    border-radius: 50px;
     /* background: linear-gradient(to bottom right, rgb(27, 27, 69), white); */
     color: #FF683D;
     text-align: center;
     font-size: xxx-large;
+
+    align-items: center;
 }
 
 #playto {
@@ -121,7 +123,7 @@ button.active .c1 {
 
 button.active .c2 {
     display: inline;
-    color: #FF683D;
+    color: green;
     font-weight: bold;
     font-size: large;
 }

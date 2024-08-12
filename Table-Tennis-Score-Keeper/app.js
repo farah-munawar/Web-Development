@@ -2,7 +2,7 @@ const b1button = document.querySelector('#b1');
 const b2button = document.querySelector('#b2');
 const resetbutton = document.querySelector('#r1');
 const scoreSelect = document.querySelector('#playto');
-
+const h1 = document.querySelector('h1')
 const p1 = document.querySelector('#p1');
 const p2 = document.querySelector('#p2');
 
@@ -15,6 +15,10 @@ function resetGame() {
     isgameOver = false;
     p1Score = 0;
     p2Score = 0;
+    h1.textContent = 'Score Keeper';
+    h1.style.color = '#6F78BB';
+    h1.style.backgroundColor = 'white';
+
     updateScores();
     document.querySelectorAll('.click-change').forEach(button => {
         button.classList.remove('active');
@@ -41,6 +45,9 @@ b1button.addEventListener('click', () => {
         p1Score += 1;
         if (p1Score === winningScore) {
             isgameOver = true;
+            h1.textContent = 'Player One Wins';
+            h1.style.color = 'white';
+            h1.style.backgroundColor = 'green';
         }
         updateScores();
         updateButtonText(b1button);
@@ -52,6 +59,9 @@ b2button.addEventListener('click', () => {
         p2Score += 1;
         if (p2Score === winningScore) {
             isgameOver = true;
+            h1.textContent = 'Player Two Wins';
+            h1.style.color = 'white';
+            h1.style.backgroundColor = 'green';
         }
         updateScores();
         updateButtonText(b2button);
