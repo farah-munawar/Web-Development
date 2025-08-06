@@ -1,0 +1,21 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container mt-5">
+    <h1 class="mb-4 text-center"><%= campground.title %></h1>
+
+    <div class="card mx-auto" style="width: 30rem;">
+        <img src="<%= campground.image %>" class="card-img-top" alt="Campground Image">
+        <div class="card-body">
+            <p class="card-text">📍 <strong>Location:</strong> <%= campground.location %></p>
+            <p class="card-text">💲 <strong>Price:</strong> $<%= campground.price %></p>
+
+            <a href="/campgrounds/<%= campground._id %>/edit" class="btn btn-secondary w-100 mb-2">Edit</a>
+
+            <form action="/campgrounds/<%= campground._id %>?_method=DELETE" method="POST">
+                <button type="submit" class="btn btn-danger w-100">Delete</button>
+            </form>
+
+            <a href="/campgrounds" class="btn btn-outline-primary mt-3 w-100">⬅ Back</a>
+        </div>
+    </div>
+</div>

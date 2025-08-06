@@ -1,0 +1,60 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container mt-5 mb-5">
+    <h1 class="text-center">Edit Campground</h1>
+
+    <form action="/campgrounds/<%= campground._id %>?_method=PUT" method="POST" novalidate class="needs-validation">
+        <div class="mb-3">
+            <label for="title" class="form-label">Title:</label>
+            <input type="text" class="form-control" name="campground[title]" id="title" required value="<%= campground.title %>">
+            <div class="invalid-feedback">Please enter a title.</div>
+        </div>
+
+        <div class="mb-3">
+            <label for="location" class="form-label">Location:</label>
+            <input type="text" class="form-control" name="campground[location]" id="location" required value="<%= campground.location %>">
+            <div class="invalid-feedback">Please enter a location.</div>
+        </div>
+
+        <div class="mb-3">
+            <label for="price" class="form-label">Price:</label>
+            <input type="number" class="form-control" name="campground[price]" id="price" required min="0" value="<%= campground.price %>">
+            <div class="invalid-feedback">Please enter a valid price (0 or more).</div>
+        </div>
+
+        <div class="mb-3">
+            <label for="image" class="form-label">Image URL:</label>
+            <input type="url" class="form-control" name="campground[image]" id="image" value="<%= campground.image %>">
+            <div class="invalid-feedback">Please enter a valid image URL.</div>
+
+            <% if (campground.image) { %>
+                <div class="mt-2">
+                    <img src="<%= campground.image %>" alt="Current Image" width="300" class="img-thumbnail">
+                </div>
+            <% } %>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update Campground</button>
+        <a href="/campgrounds" class="btn btn-secondary ms-2">Cancel</a>
+    </form>
+</div>
+
+<!-- Client-side validation script -->
+<script>
+(() => {
+  'use strict'
+
+  const forms = document.querySelectorAll('.needs-validation')
+
+  Array.from(forms).forEach(form => {
+    form.addEventListener('submit', event => {
+      if (!form.checkValidity()) {
+        event.preventDefault()
+        event.stopPropagation()
+      }
+
+      form.classList.add('was-validated')
+    }, false)
+  })
+})()
+</script>
