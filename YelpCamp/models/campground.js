@@ -1,12 +1,27 @@
-const mongoose = require('mongoose');               
-const Schema = mongoose.Schema;                 
+const mongoose = require('mongoose');
+const Review = require('./review');
 
-const campgroundSchema = new Schema({              
+const campgroundSchema = new mongoose.Schema({
   title: String,
   price: Number,
+  description: String,
   location: String,
   image: String,
-  description: String,
+  reviews: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Review'
+    }
+  ]
 });
 
-module.exports = mongoose.model('Campground', campgroundSchema); 
+// Mongoose middleware: triggered after `findByIdAndDelete`
+campgroundSchema.post('findOneAndDelete', async function (doc) {
+  if (doc) {
+    await Review.deleteMany({
+      _id: { $in: doc.reviews }
+    });
+  }
+});
+
+module.exports = mongoose.model('Campground', campgroundSchema);

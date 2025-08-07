@@ -1,21 +1,79 @@
 <% layout('layouts/boilerplate') %>
 
 <div class="container mt-5">
-    <h1 class="mb-4 text-center"><%= campground.title %></h1>
+  <div class="row justify-content-center">
+    <!-- Left Side: Campground Details -->
+    <div class="col-md-6">
+      <div class="card shadow">
+        <% if (campground.image) { %>
+          <img src="<%= campground.image %>" class="card-img-top img-fluid" alt="<%= campground.title %>" style="height: 250px; object-fit: cover;">
+        <% } %>
 
-    <div class="card mx-auto" style="width: 30rem;">
-        <img src="<%= campground.image %>" class="card-img-top" alt="Campground Image">
         <div class="card-body">
-            <p class="card-text">📍 <strong>Location:</strong> <%= campground.location %></p>
-            <p class="card-text">💲 <strong>Price:</strong> $<%= campground.price %></p>
+          <h3 class="card-title text-center mb-3"><%= campground.title %></h3>
+          <p class="card-text">
+            📍 <strong>Location:</strong> <%= campground.location %><br>
+            💲 <strong>Price:</strong> $<%= campground.price %>
+          </p>
+          <p class="card-text"><%= campground.description %></p>
 
-            <a href="/campgrounds/<%= campground._id %>/edit" class="btn btn-secondary w-100 mb-2">Edit</a>
+          <a href="/campgrounds/<%= campground._id %>/edit" class="btn btn-secondary w-100 mb-2">Edit</a>
 
-            <form action="/campgrounds/<%= campground._id %>?_method=DELETE" method="POST">
-                <button type="submit" class="btn btn-danger w-100">Delete</button>
-            </form>
+          <form action="/campgrounds/<%= campground._id %>?_method=DELETE" method="POST">
+            <button type="submit" class="btn btn-danger w-100">Delete</button>
+          </form>
 
-            <a href="/campgrounds" class="btn btn-outline-primary mt-3 w-100">⬅ Back</a>
+          <a href="/campgrounds" class="btn btn-outline-primary mt-3 w-100">⬅ Back</a>
         </div>
+      </div>
     </div>
+
+    <!-- Right Side: Ratings & Reviews -->
+    <div class="col-md-5">
+      <!-- Review Submission -->
+      <div class="card shadow mb-4">
+        <div class="card-header bg-primary text-white">
+          <strong>Leave a Review</strong>
+        </div>
+        <div class="card-body">
+          <form action="/campgrounds/<%= campground._id %>/reviews" method="POST">
+            <div class="mb-3">
+              <label for="rating" class="form-label">Rating</label>
+              <input type="range" name="review[rating]" id="rating" class="form-range" min="1" max="5" step="1" value="3">
+            </div>
+            <div class="mb-3">
+              <label for="body" class="form-label">Review</label>
+              <textarea name="review[body]" id="body" class="form-control" rows="3" placeholder="Write your review here..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Submit Review</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Review List -->
+      <div class="card shadow">
+        <div class="card-header bg-secondary text-white">
+          <strong>All Reviews</strong>
+        </div>
+        <ul class="list-group list-group-flush">
+          <% if (campground.reviews.length > 0) { %>
+            <% campground.reviews.forEach(review => { %>
+              <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div>
+                  <strong>⭐ <%= review.rating %>/5</strong><br>
+                  <%= review.body %>
+                </div>
+                <form action="/campgrounds/<%= campground._id %>/reviews/<%= review._id %>?_method=DELETE" method="POST" class="ms-2">
+                  <button type="submit" class="btn btn-sm btn-outline-danger">✕</button>
+                </form>
+              </li>
+            <% }); %>
+          <% } else { %>
+            <li class="list-group-item text-muted text-center">No reviews yet.</li>
+          <% } %>
+        </ul>
+      </div>
+    </div>
+  </div>
 </div>
+
