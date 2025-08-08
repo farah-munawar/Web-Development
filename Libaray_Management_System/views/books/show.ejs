@@ -1,0 +1,16 @@
+<%- include('../partials/header') %>
+
+<h2><%= book.title %></h2>
+<p><strong>Author:</strong> <%= book.author %></p>
+<p><strong>Genre:</strong> <%= book.genre || 'N/A' %></p>
+<p><strong>Rating:</strong> <%= book.rating || 'N/A' %></p>
+<p><strong>Status:</strong> <%= book.status %></p>
+
+<a href="/books/<%= book._id %>/edit">Edit</a>
+<form method="POST" action="/books/<%= book._id %>?_method=DELETE" style="display:inline;">
+  <button>Delete</button>
+</form>
+
+<a href="/books">⬅ Back to list</a>
+
+<%- include('../partials/footer') %>
