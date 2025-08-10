@@ -39,20 +39,20 @@ const sessionConfig = {
 };
 app.use(session(sessionConfig));
 
-// ✅ Passport Setup
+//  Passport Setup
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-// ✅ Middleware to pass user info to all templates
+// Middleware to pass user info to all templates
 app.use((req, res, next) => {
   res.locals.currentUser = req.user;
   next();
 });
 
-// ✅ Validation Middleware
+//  Validation Middleware
 const validateCampground = (req, res, next) => {
   const campgroundSchema = joi.object({
     campground: joi.object({
@@ -70,8 +70,20 @@ const validateCampground = (req, res, next) => {
   }
   next();
 };
+const isReviewAuthor = async (req, res, next) => {
+  const { reviewId } = req.params;
+  const review = await Review.findById(reviewId);
+  if (!review) return next(new ExpressError('Review not found', 404));
 
-// ✅ Authentication Check
+  // Only review owner can proceed
+  if (!review.author.equals(req.user._id)) {
+    return next(new ExpressError('You do not have permission to do that', 403));
+  }
+  next();
+};
+
+
+// Authentication Check
 const isLoggedIn = (req, res, next) => {
   if (!req.isAuthenticated()) {
     return res.redirect('/login');
@@ -89,7 +101,7 @@ app.get('/', (req, res) => {
 });
 
 
-// ✅ Register
+// Register
 app.get('/register', (req, res) => {
   res.render('users/register');
 });
@@ -108,7 +120,7 @@ app.post('/register', catchAsync(async (req, res, next) => {
   }
 }));
 
-// ✅ Login
+// Login
 app.get('/login', (req, res) => {
   res.render('users/login');
 });
@@ -119,7 +131,7 @@ app.post('/login', passport.authenticate('local', {
   res.redirect('/campgrounds');
 });
 
-// ✅ Logout
+// Logout
 app.post('/logout', (req, res, next) => {
   req.logout(function (err) {
     if (err) { return next(err); }
@@ -129,10 +141,16 @@ app.post('/logout', (req, res, next) => {
 
 
 // Campground routes
-app.get('/campgrounds', catchAsync(async (req, res) => {
-  const campgrounds = await Campground.find({});
-  res.render('campgrounds/index', { campgrounds });
-}));
+app.get('/campgrounds', async (req, res) => {
+  try {
+    const campgrounds = await Campground.find({});  // Fetch campgrounds from DB
+    res.render('campgrounds/index', { campgrounds });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send('Something went wrong!');
+  }
+});
+
 
 app.get('/campgrounds/new', isLoggedIn, (req, res) => {
   res.render('campgrounds/new');
@@ -145,7 +163,8 @@ app.post('/campgrounds', isLoggedIn, validateCampground, catchAsync(async (req, 
 }));
 
 app.get('/campgrounds/:id', catchAsync(async (req, res) => {
-  const campground = await Campground.findById(req.params.id).populate('reviews');
+  const campground = await Campground.findById(req.params.id)
+    .populate({ path: 'reviews', populate: { path: 'author' } }); // ✅
   if (!campground) throw new ExpressError('Campground not found', 404);
   res.render('campgrounds/show', { campground });
 }));
@@ -169,18 +188,25 @@ app.delete('/campgrounds/:id', isLoggedIn, catchAsync(async (req, res) => {
 app.post('/campgrounds/:id/reviews', isLoggedIn, catchAsync(async (req, res) => {
   const campground = await Campground.findById(req.params.id);
   const review = new Review(req.body.review);
-  campground.reviews.push(review);
+  review.author = req.user._id;        // ✅ attach the owner
   await review.save();
+  campground.reviews.push(review);
   await campground.save();
   res.redirect(`/campgrounds/${campground._id}`);
 }));
 
-app.delete('/campgrounds/:id/reviews/:reviewId', isLoggedIn, catchAsync(async (req, res) => {
-  const { id, reviewId } = req.params;
-  await Campground.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
-  await Review.findByIdAndDelete(reviewId);
-  res.redirect(`/campgrounds/${id}`);
-}));
+
+app.delete(
+  '/campgrounds/:id/reviews/:reviewId',
+  isLoggedIn,
+  catchAsync(isReviewAuthor),     // ✅ add this check
+  catchAsync(async (req, res) => {
+    const { id, reviewId } = req.params;
+    await Campground.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
+    await Review.findByIdAndDelete(reviewId);
+    res.redirect(`/campgrounds/${id}`);
+  })
+);
 
 // Error Handler
 app.use((err, req, res, next) => {

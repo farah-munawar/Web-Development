@@ -5,7 +5,7 @@ const path = require('path');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const bookRoutes = require('./routes/books');
-const authRoutes = require('./routes/auth'); // ✅ NEW
+const authRoutes = require('./routes/auth'); 
 const app = express();
 
 mongoose.connect('mongodb://localhost:27017/bookTracker')

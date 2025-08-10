@@ -1,27 +1,82 @@
 <% layout('layouts/boilerplate') %>
 
-<div class="container mt-4">
-    <h1 class="mb-4 text-center">All Campgrounds</h1>
+<!-- Leaflet (remove if already included in layout) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <div class="row">
-        <% for(let campground of campgrounds){ %>  
-            <div class="col-md-4 mb-4">
-                <div class="card h-100 shadow-sm">
-                   <img src="<%= campground.image || '/images/default.jpg' %>" class="card-img-top" alt="<%= campground.title %>">
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title"><%= campground.title %></h5>
-                        <p class="card-text mb-1">📍 <%= campground.location %></p>
-                        <p class="card-text mb-3">💲 $<%= campground.price %></p>
-                        <div class="mt-auto">
-                            <a href="/campgrounds/<%= campground._id %>" class="btn btn-primary btn-sm w-100 mb-1">View Details</a>
-                            <a href="/campgrounds/<%= campground._id %>/edit" class="btn btn-secondary btn-sm w-100 mb-1">Edit</a>
-                            <form action="/campgrounds/<%= campground._id %>?_method=DELETE" method="POST">
-                                <button type="submit" class="btn btn-danger btn-sm w-100">Delete</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+<style>
+  #map { height: 420px; border-radius: 8px; }
+</style>
+
+<div class="container mt-4">
+  <h1 class="mb-3 text-center">All Campgrounds</h1>
+
+  <!-- Map -->
+  <div id="map" class="mb-4"></div>
+
+  <!-- Serialize campgrounds to JSON (safe, unescaped) -->
+  <script type="application/json" id="camp-data">
+    <%- JSON.stringify(
+      (campgrounds || []).map(c => {
+        const hasGeo = c?.geometry?.coordinates?.length === 2;
+        const lat = hasGeo ? c.geometry.coordinates[1]
+                           : (typeof c.latitude === 'number' ? c.latitude : null);
+        const lng = hasGeo ? c.geometry.coordinates[0]
+                           : (typeof c.longitude === 'number' ? c.longitude : null);
+        return { title: c.title, location: c.location, lat, lng };
+      })
+    ) %>
+  </script>
+
+  <script>
+    // Init map
+    const map = L.map('map');
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19, attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    // Parse data
+    let camps = [];
+    try { camps = JSON.parse(document.getElementById('camp-data').textContent || '[]'); } catch (e) { console.error(e); }
+
+    // Add markers + fit bounds
+    const bounds = L.latLngBounds([]);
+    camps.forEach(c => {
+      if (typeof c.lat === 'number' && typeof c.lng === 'number') {
+        L.marker([c.lat, c.lng]).addTo(map)
+          .bindPopup(`<b>${c.title}</b><br>${c.location}`);
+        bounds.extend([c.lat, c.lng]);
+      }
+    });
+
+    if (bounds.isValid()) {
+      map.fitBounds(bounds.pad(0.15));
+    } else {
+      // Fallback center (set what makes sense for your dataset)
+      map.setView([37.0902, -95.7129], 4);
+    }
+  </script>
+
+  <!-- Campground Cards -->
+  <div class="row mt-4">
+    <% for (let campground of campgrounds) { %>
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+          <img src="<%= campground.image || '/images/default.jpg' %>" class="card-img-top" alt="<%= campground.title %>">
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title"><%= campground.title %></h5>
+            <p class="card-text mb-1">📍 <%= campground.location %></p>
+            <p class="card-text mb-3">💲 $<%= campground.price %></p>
+            <div class="mt-auto">
+              <a href="/campgrounds/<%= campground._id %>" class="btn btn-primary btn-sm w-100 mb-1">View Details</a>
+              <a href="/campgrounds/<%= campground._id %>/edit" class="btn btn-secondary btn-sm w-100 mb-1">Edit</a>
+              <form action="/campgrounds/<%= campground._id %>?_method=DELETE" method="POST">
+                <button type="submit" class="btn btn-danger btn-sm w-100">Delete</button>
+              </form>
             </div>
-        <% } %>
-    </div>
+          </div>
+        </div>
+      </div>
+    <% } %>
+  </div>
 </div>

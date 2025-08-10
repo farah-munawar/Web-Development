@@ -17,11 +17,18 @@
           </p>
           <p class="card-text"><%= campground.description %></p>
 
-          <a href="/campgrounds/<%= campground._id %>/edit" class="btn btn-secondary w-100 mb-2">Edit</a>
+          <% 
+            // Robust owner check: works with populated or ObjectId
+            const campOwnerId = campground.author && (campground.author._id || campground.author);
+            const canManageCamp = currentUser && campOwnerId && String(campOwnerId) === String(currentUser._id);
+          %>
 
-          <form action="/campgrounds/<%= campground._id %>?_method=DELETE" method="POST">
-            <button type="submit" class="btn btn-danger w-100">Delete</button>
-          </form>
+          <% if (canManageCamp) { %>
+            <a href="/campgrounds/<%= campground._id %>/edit" class="btn btn-secondary w-100 mb-2">Edit</a>
+            <form action="/campgrounds/<%= campground._id %>?_method=DELETE" method="POST">
+              <button type="submit" class="btn btn-danger w-100">Delete</button>
+            </form>
+          <% } %>
 
           <a href="/campgrounds" class="btn btn-outline-primary mt-3 w-100">⬅ Back</a>
         </div>
@@ -36,17 +43,21 @@
           <strong>Leave a Review</strong>
         </div>
         <div class="card-body">
-          <form action="/campgrounds/<%= campground._id %>/reviews" method="POST">
-            <div class="mb-3">
-              <label for="rating" class="form-label">Rating</label>
-              <input type="range" name="review[rating]" id="rating" class="form-range" min="1" max="5" step="1" value="3">
-            </div>
-            <div class="mb-3">
-              <label for="body" class="form-label">Review</label>
-              <textarea name="review[body]" id="body" class="form-control" rows="3" placeholder="Write your review here..."></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary w-100">Submit Review</button>
-          </form>
+          <% if (currentUser) { %>
+            <form action="/campgrounds/<%= campground._id %>/reviews" method="POST">
+              <div class="mb-3">
+                <label for="rating" class="form-label">Rating</label>
+                <input type="range" name="review[rating]" id="rating" class="form-range" min="1" max="5" step="1" value="3" required>
+              </div>
+              <div class="mb-3">
+                <label for="body" class="form-label">Review</label>
+                <textarea name="review[body]" id="body" class="form-control" rows="3" placeholder="Write your review here..." required></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Submit Review</button>
+            </form>
+          <% } else { %>
+            <p class="mb-0">You must <a href="/login">log in</a> to leave a review.</p>
+          <% } %>
         </div>
       </div>
 
@@ -57,15 +68,24 @@
         </div>
         <ul class="list-group list-group-flush">
           <% if (campground.reviews.length > 0) { %>
-            <% campground.reviews.forEach(review => { %>
+            <% campground.reviews.forEach(review => { 
+                 const reviewAuthorId = review.author && (review.author._id || review.author);
+                 const canDeleteReview = currentUser && reviewAuthorId && String(reviewAuthorId) === String(currentUser._id);
+            %>
               <li class="list-group-item d-flex justify-content-between align-items-start">
-                <div>
+                <div class="me-2">
                   <strong>⭐ <%= review.rating %>/5</strong><br>
                   <%= review.body %>
+                  <% if (review.author && review.author.username) { %>
+                    <div class="text-muted small mt-1">by <%= review.author.username %></div>
+                  <% } %>
                 </div>
-                <form action="/campgrounds/<%= campground._id %>/reviews/<%= review._id %>?_method=DELETE" method="POST" class="ms-2">
-                  <button type="submit" class="btn btn-sm btn-outline-danger">✕</button>
-                </form>
+
+                <% if (canDeleteReview) { %>
+                  <form action="/campgrounds/<%= campground._id %>/reviews/<%= review._id %>?_method=DELETE" method="POST" class="ms-2">
+                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete your review">✕</button>
+                  </form>
+                <% } %>
               </li>
             <% }); %>
           <% } else { %>
@@ -76,4 +96,3 @@
     </div>
   </div>
 </div>
-

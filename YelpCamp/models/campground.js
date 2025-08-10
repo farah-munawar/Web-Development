@@ -7,6 +7,14 @@ const campgroundSchema = new mongoose.Schema({
   description: String,
   location: String,
   image: String,
+  latitude: Number,  // Add latitude
+  longitude: Number,
+   geometry: {              // GeoJSON Point
+    type: {
+      type: String,
+      enum: ['Point'],
+      default: 'Point'
+    }},
   reviews: [
     {
       type: mongoose.Schema.Types.ObjectId,
